@@ -1,8 +1,8 @@
 <?php
-$directory = '/var/www/html/drive/'; // Update the directory path accordingly
+$directory = '/var/www/html/drive/';
 $files = scandir($directory);
 foreach ($files as $file) {
-    if ($file != '.' && $file != '..') {
+    if ($file != '.' && $file != '..' && $file[0] != '.') {
         $fileSize = filesize($directory . '/' . $file);
         echo '<li class="file">
                 <a href="drive/' . $file . '">' . $file . '</a> <span>(' . formatSizeUnits($fileSize) . ')</span>
