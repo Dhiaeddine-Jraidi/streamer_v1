@@ -1,44 +1,66 @@
 body {
+    background-color: #131722;
+    color: #ffffff;
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
 }
 
-.container {
-    max-width: 800px;
-    margin: 20px auto;
+.server-directory {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
+.folder-block {
+    background-color: #004080;
+    border: 1px solid #0059b3;
+    border-radius: 10px;
+    margin: 10px;
+    overflow: hidden;
+    text-align: center;
+    width: 200px;
+    transition: transform 0.2s;
 }
 
-.file-list {
-    list-style-type: none;
-    padding: 0;
+.folder-block:hover {
+    transform: scale(1.05);
 }
 
-.file {
-    margin-bottom: 10px;
+.cover-image {
+    border-bottom: 1px solid #0059b3;
+    width: 100%;
+    height: auto;
 }
 
-.file a {
-    color: #007bff;
+.folder-name {
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.folder-name a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.folder-name a:visited {
+    color: #ffffff;
     text-decoration: none;
 }
 
-.file a:hover {
-    text-decoration: underline;
+.folder-name a:hover {
+    color: #ffffff;
+    text-decoration: none;
 }
 
-.file span {
-    color: #777;
-    margin-left: 10px;
+.folder-name a:active {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.folder-name a:focus {
+    color: #ffffff;
+    text-decoration: none;
 }
