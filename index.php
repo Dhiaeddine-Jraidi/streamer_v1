@@ -8,9 +8,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Server Directory</h1>
         <ul class="file-list">
-            <?php include 'file_listing.php'; ?>
+            <?php include 'series_listing.php'; ?>
         </ul>
     </div>
 </body>
