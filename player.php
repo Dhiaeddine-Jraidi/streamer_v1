@@ -18,7 +18,7 @@ $output_file_vtt = "drive/$serie/" . pathinfo($episode, PATHINFO_FILENAME) . ".v
 function generateSubtitle($input_file, $output_file_vtt) {
     $command = "ffmpeg -i \"$input_file\" -map 0:s:0 -c:s webvtt \"$output_file_vtt\"";
     exec($command);
-    exec("python3 vtt_converter.py \"$output_file_vtt\"");
+    exec("python3 vtt_cleaner.py \"$output_file_vtt\"");
     return file_exists($output_file_vtt);
 }
 
