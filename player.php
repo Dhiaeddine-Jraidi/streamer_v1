@@ -15,9 +15,9 @@ if ($serie && $episode) {
 $input_file = "drive/$serie/$episode";
 $output_file_vtt = "drive/$serie/" . pathinfo($episode, PATHINFO_FILENAME) . ".vtt";
 
+
 function generateSubtitle($input_file, $output_file_vtt) {
-    $command = "ffmpeg -i \"$input_file\" -map 0:s:0 -c:s webvtt \"$output_file_vtt\"";
-    exec($command);
+    exec("ffmpeg -i \"$input_file\" -map 0:s:0 -c:s webvtt \"$output_file_vtt\"");
     exec("python3 vtt_cleaner.py \"$output_file_vtt\"");
     return file_exists($output_file_vtt);
 }
@@ -49,97 +49,100 @@ if ($current_index !== false) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?php echo $serie . ' - ' . pathinfo($episode, PATHINFO_FILENAME); ?></title>
-<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
-<style>
-    body {
-        background-color: #131722;
-        color: #ffffff;
-        font-family: Arial, sans-serif;
-        margin: 0;
-    }
-    .video-container {
-        position: relative;
-        width: 70%;
-        padding-top: 39.375%;
-        overflow: hidden;
-        margin: 0 auto;
-    }
-    .video-js {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    .episode-navigation {
-        display: flex;
-        justify-content: space-between;
-        margin: 20px auto;
-        width: 70%;
-    }
-    .episode-block {
-        background-color: #004080;
-        border: 1px solid #0059b3;
-        border-radius: 10px;
-        margin: 10px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 150px;
-        height: 50px;
-        transition: transform 0.2s;
-        text-decoration: none;
-        color: #ffffff;
-    }
-    .episode-block:hover {
-        transform: scale(1.05);
-    }
-</style>
-<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $serie . ' - ' . pathinfo($episode, PATHINFO_FILENAME); ?></title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Stack elements vertically */
+            height: 100vh;
+            background-color: #131722; /* Updated background color */
+        }
+        .video-container {
+            width: 70%;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px; /* Space between video and navigation */
+        }
+        #player {
+            width: 100%;
+            height: 100%;
+        }
+        .episode-navigation {
+            display: flex;
+            justify-content: space-between;
+            width: 70%;
+        }
+        .episode-block {
+            background-color: #004080;
+            border: 1px solid #0059b3;
+            border-radius: 10px;
+            margin: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 50px;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: #ffffff;
+        }
+        .episode-block:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-
-<div class="video-container">
-    <video id="my-video" class="video-js" controls preload="auto" autoplay data-setup="{}">
-        <source src="<?php echo $input_file; ?>" type="video/mp4">
-        <?php
+    <div class="video-container">
+        <video id="player" playsinline controls data-poster="drive/<?php echo $serie; ?>/.cover.jpg">
+            <source src="<?php echo $input_file; ?>" type="video/mp4" />
+            <?php
             if (file_exists($output_file_vtt) || $subtitle_generated) {
-                echo "<track src='$output_file_vtt' kind='captions' srclang='ar' label='Arabic' default>";
+                echo "<track kind='captions' label='Arabic captions' src='$output_file_vtt' srclang='ar' default />";
             }
-        ?>
-    </video>
-</div>
+            ?>
+        </video>
+    </div>
+    <div class="episode-navigation">
+        <?php if ($prev_episode !== 'none'): ?>
+            <a href="?serie=<?php echo htmlspecialchars($serie); ?>&episode=<?php echo htmlspecialchars($prev_episode); ?>" class="episode-block">Previous</a>
+        <?php endif; ?>
+        <?php if ($next_episode !== 'none'): ?>
+            <a href="?serie=<?php echo htmlspecialchars($serie); ?>&episode=<?php echo htmlspecialchars($next_episode); ?>" class="episode-block">Next</a>
+        <?php endif; ?>
+    </div>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script>
 
-<div class="episode-navigation">
-    <?php if ($prev_episode !== 'none'): ?>
-        <a href="?serie=<?php echo htmlspecialchars($serie); ?>&episode=<?php echo htmlspecialchars($prev_episode); ?>" class="episode-block">Previous</a>
-    <?php endif; ?>
-    <?php if ($next_episode !== 'none'): ?>
-        <a href="?serie=<?php echo htmlspecialchars($serie); ?>&episode=<?php echo htmlspecialchars($next_episode); ?>" class="episode-block">Next</a>
-    <?php endif; ?>
-</div>
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = new Plyr('#player');
 
-<script>
-    var player = videojs('my-video');
-    
-    window.addEventListener('beforeunload', function() {
-        var currentTime = player.currentTime();
-        localStorage.setItem('playbackTime_<?php echo $serie . '_' . $episode; ?>', currentTime);
-    });
+            const playbackKey = 'playbackTime_<?php echo $serie . '_' . $episode; ?>';
+            const savedTime = localStorage.getItem(playbackKey);
+            if (savedTime !== null) {
+                player.once('canplay', () => {
+                    player.currentTime = parseFloat(savedTime);
+                });
+            }
+            window.addEventListener('beforeunload', function() {
+                localStorage.setItem(playbackKey, player.currentTime);
+            });
+            setInterval(function() {
+                localStorage.setItem(playbackKey, player.currentTime);
+            }, 5000);
+        });
 
-    window.addEventListener('load', function() {
-        var savedTime = localStorage.getItem('playbackTime_<?php echo $serie . '_' . $episode; ?>');
-        if (savedTime !== null) {
-            player.currentTime(savedTime);
-        }
-    });
-</script>
+    </script>
 </body>
 </html>
